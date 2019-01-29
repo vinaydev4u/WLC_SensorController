@@ -1,4 +1,6 @@
+#include <TransferI2C_WLC.h>
 #include <Wire.h>
+
 
 //Sensor Module act as Master
 int TransmitDeviceNo = 1;
@@ -32,6 +34,16 @@ const String logFunc = "Nano-Sensor";
 const int ErrorReading = 1000;
 bool EnableDebug = true;
 
+struct SEND_DATA_STRUCTURE {
+int tankNo;
+float sensorValue;
+};
+
+//create object
+SEND_DATA_STRUCTURE Send_Data;
+
+TransferI2C_WLC Transfer; 
+
 void setup() {
 
     //LED Display
@@ -51,9 +63,11 @@ void setup() {
 
     //Begin wire transmission to slave(Aurdino UNO Module)
     Wire.begin(); // join i2c bus (address optional for master)
-    
+   // Wire.onRequest(request);
     //Logging
     Serial.begin(9600); // Starts the serial communication
+
+    Transfer.begin(details(Send_Data), &Wire);  //this initializes the Send_data data object
 }
 
 void loop() {
@@ -66,13 +80,32 @@ void loop() {
         LogSerial(false,logFunc,true," Distance : ");
         LogSerial(true,logFunc,true,String(distance));  
 
+        //Send Tank No first:
+        Wire.write(tank);  
+
+        Send_Data.tankNo = tank;
+        Send_Data.sensorValue = distance;
+
+        Transfer.sendData(TransmitDeviceNo);  
+       // Transfer.flagSlaveSend();    //if the master requests it, set the flag so that ETout.sendData() works properly in the loop().
+       //Transfer.sendData();          //An I2C SLAVE can only address the master, so no address is requested
+  //Wire.write("abc");
         //Transmit Sensor status to Master
-       // TransmitDistanceToMaster(distance);
+        //TransmitDistanceToMaster(distance);
     }
 
      delay(300);
 }
 
+
+void request() {
+  //Serial.println("Received Request!");
+  //ETout_data.blinks = random(5);
+  //ETout_data.pause = random(5);
+  //Transfer.flagSlaveSend();    //if the master requests it, set the flag so that ETout.sendData() works properly in the loop().
+  //Transfer.sendData();          //An I2C SLAVE can only address the master, so no address is requested
+  //Wire.write("abc");
+}
 void TransmitDistanceToMaster(float distance)
 {
     Wire.beginTransmission(TransmitDeviceNo); // transmit to device #1
