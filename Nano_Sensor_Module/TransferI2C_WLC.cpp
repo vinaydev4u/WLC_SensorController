@@ -1,4 +1,4 @@
-#include <TransferI2C_WLC.h>
+#include "TransferI2C_WLC.h"
 
 //Captures address and size of struct
 void TransferI2C_WLC::begin(uint8_t * ptr, uint8_t length, TwoWire *theSerial){

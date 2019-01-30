@@ -1,6 +1,4 @@
-#include <TransferI2C_WLC.h>
-#include <Wire.h>
-
+#include "TransferI2C_WLC.h"
 
 //Sensor Module act as Master
 int TransmitDeviceNo = 1;
@@ -87,23 +85,17 @@ void loop() {
         Send_Data.sensorValue = distance;
 
         Transfer.sendData(TransmitDeviceNo);  
-       // Transfer.flagSlaveSend();    //if the master requests it, set the flag so that ETout.sendData() works properly in the loop().
        //Transfer.sendData();          //An I2C SLAVE can only address the master, so no address is requested
   //Wire.write("abc");
-        //Transmit Sensor status to Master
-        //TransmitDistanceToMaster(distance);
     }
 
      delay(300);
 }
 
 
-void request() {
   //Serial.println("Received Request!");
   //ETout_data.blinks = random(5);
   //ETout_data.pause = random(5);
-  //Transfer.flagSlaveSend();    //if the master requests it, set the flag so that ETout.sendData() works properly in the loop().
-  //Transfer.sendData();          //An I2C SLAVE can only address the master, so no address is requested
   //Wire.write("abc");
 }
 void TransmitDistanceToMaster(float distance)
