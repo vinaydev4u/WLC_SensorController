@@ -1,5 +1,6 @@
 #include "TransferI2C_WLC.h"
 
+
 //Sensor Module act as Master
 int TransmitDeviceNo = 1;
 
@@ -85,8 +86,6 @@ void loop() {
         Send_Data.sensorValue = distance;
 
         Transfer.sendData(TransmitDeviceNo);  
-       //Transfer.sendData();          //An I2C SLAVE can only address the master, so no address is requested
-  //Wire.write("abc");
     }
 
      delay(300);
@@ -96,23 +95,29 @@ void loop() {
   //Serial.println("Received Request!");
   //ETout_data.blinks = random(5);
   //ETout_data.pause = random(5);
-  //Wire.write("abc");
-}
-void TransmitDistanceToMaster(float distance)
-{
-    Wire.beginTransmission(TransmitDeviceNo); // transmit to device #1
-    
-    volatile  byte* temp = (byte*) &distance;
-    byte data[4];
-    data[0] = temp[0]; 
-    data[1] = temp[1]; 
-    data[2] = temp[2]; 
-    data[3] = temp[3]; 
-    
-    Wire.write(data,4);   // sends one byte
-    
-    Wire.endTransmission();   // stop transmitting
-}
+//void request() {
+//  //Serial.println("Received Request!");
+//  //ETout_data.blinks = random(5);
+//  //ETout_data.pause = random(5);
+//  //Transfer.flagSlaveSend();    //if the master requests it, set the flag so that ETout.sendData() works properly in the loop().
+//  //Transfer.sendData();          //An I2C SLAVE can only address the master, so no address is requested
+//  //Wire.write("abc");
+//}
+//void TransmitDistanceToMaster(float distance)
+//{
+//    Wire.beginTransmission(TransmitDeviceNo); // transmit to device #1
+//    
+//    volatile  byte* temp = (byte*) &distance;
+//    byte data[4];
+//    data[0] = temp[0]; 
+//    data[1] = temp[1]; 
+//    data[2] = temp[2]; 
+//    data[3] = temp[3]; 
+//    
+//    Wire.write(data,4);   // sends one byte
+//    
+//    Wire.endTransmission();   // stop transmitting
+//}
 
 float GetTankStatus(int tankNo)
 {
