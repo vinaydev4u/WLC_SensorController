@@ -27,7 +27,7 @@ const int LED1 = A6;
 
 const int MaxTickCount  = 5;
 const int SensorsMaxCount = 2;
-const int MaxTankCount = 2;
+int MaxTankCount = 2;
 
 const String logFunc = "Nano-Sensor";
 //Error reading for valus in inches
@@ -39,10 +39,16 @@ int tankNo;
 float sensorValue;
 };
 
+//Config data structure
+struct CONFIG_DATA_STRUCTURE {
+int TotalTanks;
+};
+
 //create object
 TANK_DATA_STRUCTURE Tank_Data;
+CONFIG_DATA_STRUCTURE Config_Data;
 
-TransferI2C_WLC Transfer; 
+TransferI2C_WLC TransferOut,TransferIn; 
 
 void setup() {
 
@@ -67,7 +73,9 @@ void setup() {
     //Logging
     Serial.begin(9600); // Starts the serial communication
 
-    Transfer.begin(details(Tank_Data), &Wire);  //this initializes the Send_data data object
+    TransferOut.begin(details(Tank_Data), &Wire);  //this initializes the Tank_data data object
+    TransferIn.begin(details(Config_Data), &Wire);  //this initializes the Config_data data object
+    
 }
 
 void loop() {
@@ -87,10 +95,17 @@ void loop() {
         Tank_Data.tankNo = tank;
         Tank_Data.sensorValue = distance;
 
-        Transfer.sendData(TransmitDeviceNo);  
+        TransferOut.sendData(TransmitDeviceNo);  
+
+        //Receive Config Data if any
+         if(TransferIn.receiveData(TransmitDeviceNo))
+         {       
+            Serial.println(Config_Data.TotalTanks);   
+            MaxTankCount = Config_Data.TotalTanks;
+         }
     }
 
-     delay(300);
+    delay(300);
 }
 
 
