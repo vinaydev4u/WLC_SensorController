@@ -1,4 +1,5 @@
-#include "TransferI2C_WLC.h"
+#include <Wire.h>
+#include <TransferI2C_WLC.h>
 
 
 //Sensor Module act as Master
@@ -33,13 +34,13 @@ const String logFunc = "Nano-Sensor";
 const int ErrorReading = 1000;
 bool EnableDebug = true;
 
-struct SEND_DATA_STRUCTURE {
+struct TANK_DATA_STRUCTURE {
 int tankNo;
 float sensorValue;
 };
 
 //create object
-SEND_DATA_STRUCTURE Send_Data;
+TANK_DATA_STRUCTURE Tank_Data;
 
 TransferI2C_WLC Transfer; 
 
@@ -66,7 +67,7 @@ void setup() {
     //Logging
     Serial.begin(9600); // Starts the serial communication
 
-    Transfer.begin(details(Send_Data), &Wire);  //this initializes the Send_data data object
+    Transfer.begin(details(Tank_Data), &Wire);  //this initializes the Send_data data object
 }
 
 void loop() {
@@ -80,10 +81,11 @@ void loop() {
         LogSerial(true,logFunc,true,String(distance));  
 
         //Send Tank No first:
-        Wire.write(tank);  
+        //Wire.write(tank);  
 
-        Send_Data.tankNo = tank;
-        Send_Data.sensorValue = distance;
+        //Transfer data to Master/Main Controller
+        Tank_Data.tankNo = tank;
+        Tank_Data.sensorValue = distance;
 
         Transfer.sendData(TransmitDeviceNo);  
     }
