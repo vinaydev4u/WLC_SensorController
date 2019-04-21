@@ -1,9 +1,11 @@
-#include <Wire.h>
 #include <TransferI2C_WLC.h>
 
+#include <Wire.h>
 
-//Sensor Module act as Master
-int TransmitDeviceNo = 1;
+
+//I2C communication address
+int I2C_SUMP_MODULE_ADDRESS = 11;
+int I2C_TANK_MODULE_ADDRESS = 12;
 
 //overhead Tank Sensor
 //Tank1 sensors Pins
@@ -68,18 +70,62 @@ void setup() {
     pinMode(Tank2EchoPin2, INPUT); // Sets the echoPin as an Input
 
     //Begin wire transmission to slave(Aurdino UNO Module)
-    Wire.begin(); // join i2c bus (address optional for master)
-   // Wire.onRequest(request);
+    Wire.begin(I2C_TANK_MODULE_ADDRESS); // join i2c bus (address optional for master)
+    Wire.onRequest(request);
+    
     //Logging
     Serial.begin(9600); // Starts the serial communication
 
     TransferOut.begin(details(Tank_Data), &Wire);  //this initializes the Tank_data data object
     TransferIn.begin(details(Config_Data), &Wire);  //this initializes the Config_data data object
-    
+
+   //define handler function on receiving data
+   Wire.onReceive(receive);
 }
+
+void receive(int numBytes) {}
+
+void request() {
+
+ Serial.println("Request to slave1");
+  //Serial.println(Tank_Data.tankNo);
+  //Serial.println(Tank_Data.sensorValue);
+     
+  TransferOut.flagSlaveSend();
+  TransferOut.sendData();
+
+
+// for(int tank = 1; tank <= MaxTankCount ; tank++)
+//    {
+//        float distance = GetTankStatus(tank);
+//        LogSerial(false,logFunc,true,"Tanks Selected : ");
+//        LogSerial(false,logFunc,true,String(tank));
+//        LogSerial(false,logFunc,true," Distance : ");
+//        LogSerial(true,logFunc,true,String(distance));  
+//
+//        //Transfer data to Master/Main Controller
+//        Tank_Data.tankNo = tank;
+//        Tank_Data.sensorValue = distance;
+//
+//        TransferOut.flagSlaveSend();
+//        TransferOut.sendData();  
+//       
+//
+//       // Receive Config Data if any
+////        if(TransferIn.receiveData(I2C_TANK_MODULE_ADDRESS))
+////         {       
+////            Serial.println(Config_Data.TotalTanks);   
+////            MaxTankCount =  Config_Data.TotalTanks;
+////         }
+//    }
+    
+
+}
+
 
 void loop() {
 
+ 
     for(int tank = 1; tank <= MaxTankCount ; tank++)
     {
         float distance = GetTankStatus(tank);
@@ -88,24 +134,24 @@ void loop() {
         LogSerial(false,logFunc,true," Distance : ");
         LogSerial(true,logFunc,true,String(distance));  
 
-        //Send Tank No first:
-        //Wire.write(tank);  
-
         //Transfer data to Master/Main Controller
         Tank_Data.tankNo = tank;
         Tank_Data.sensorValue = distance;
 
-        TransferOut.sendData(TransmitDeviceNo);  
+        delay(10);
+       
+        //TransferOut.flagSlaveSend();
+        //TransferOut.sendData();  
 
-        //Receive Config Data if any
-         if(TransferIn.receiveData(TransmitDeviceNo))
-         {       
-            Serial.println(Config_Data.TotalTanks);   
-            MaxTankCount = Config_Data.TotalTanks;
-         }
+       // Receive Config Data if any
+//        if(TransferIn.receiveData(I2C_TANK_MODULE_ADDRESS))
+//         {       
+//            Serial.println(Config_Data.TotalTanks);   
+//            MaxTankCount =  Config_Data.TotalTanks;
+//         }
     }
 
-    delay(300);
+  //  delay(300);
 }
 
 
