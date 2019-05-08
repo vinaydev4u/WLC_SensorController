@@ -2,6 +2,7 @@
 
 #include <Wire.h>
 
+//Sump Sensor Module
 
 //I2C communication address
 int I2C_SUMP_MODULE_ADDRESS = 11;
@@ -29,9 +30,9 @@ const int LED1 = A6;
 
 const int MaxTickCount  = 5;
 const int SensorsMaxCount = 2;
-int MaxTankCount = 2;
+int MaxTankCount = 1;
 
-const String logFunc = "Nano-Sensor Module1";
+const String logFunc = "Nano-Sensor SumpModule";
 //Error reading for valus in inches
 const int ErrorReading = 1000;
 bool EnableDebug = true;
@@ -70,7 +71,7 @@ void setup() {
   pinMode(Tank2EchoPin2, INPUT); // Sets the echoPin as an Input
 
   //Begin wire transmission to slave(Aurdino UNO Module)
-  Wire.begin(I2C_TANK_MODULE_ADDRESS); // join i2c bus (address optional for master)
+  Wire.begin(I2C_SUMP_MODULE_ADDRESS); // join i2c bus (address optional for master)
   Wire.onRequest(request);
 
   //Logging
@@ -86,31 +87,29 @@ void setup() {
 void receive(int numBytes) {}
 
 void request() {
-  
+
   LogSerial(false, logFunc, true, "Tanks Selected : ");
   LogSerial(false, logFunc, true, String(Tank_Data.tankNo));
   LogSerial(false, logFunc, true, " Distance : ");
   LogSerial(true, logFunc, true, String(Tank_Data.sensorValue));
-  
+
   //Transfer data to Master/Main Controller
   TransferOut.flagSlaveSend();
   TransferOut.sendData();
 
 }
 
-
 void loop() {
-
 
   for (int tank = 1; tank <= MaxTankCount ; tank++)
   {
     float distance = GetTankStatus(tank);
-     
+
     Tank_Data.tankNo = tank;
     Tank_Data.sensorValue = distance;
-
-    delay(10);
   }
+
+  delay(300);
 }
 
 //Get Tank Status for selected tankNo
