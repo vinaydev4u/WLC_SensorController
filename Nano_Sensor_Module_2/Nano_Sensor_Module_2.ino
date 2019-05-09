@@ -30,6 +30,7 @@ const int LED1 = A6;
 const int MaxTickCount  = 5;
 const int SensorsMaxCount = 2;
 int MaxTankCount = 2;
+const int StartTankCount = 2;
 
 const String logFunc = "Nano-Sensor- Tank Module";
 //Error reading for valus in inches
@@ -38,6 +39,7 @@ bool EnableDebug = true;
 
 struct TANK_DATA_STRUCTURE {
   int tankNo;
+  int TotalTanks;
   float sensorValue;
 };
 
@@ -46,9 +48,12 @@ struct CONFIG_DATA_STRUCTURE {
   int TotalTanks;
 };
 
+
 //create object
 TANK_DATA_STRUCTURE Tank_Data;
 CONFIG_DATA_STRUCTURE Config_Data;
+
+//TANK_DATA_STRUCTURE Tanks_Data[MaxTanksSupported];
 
 TransferI2C_WLC TransferOut, TransferIn;
 
@@ -109,11 +114,11 @@ void loop() {
     Tank_Data.sensorValue = distance;
 
     //Receive Config Data if any
-    //         if(TransferIn.receiveData(TransmitDeviceNo))
-    //         {
-    //            Serial.println(Config_Data.TotalTanks);
-    //            MaxTankCount = Config_Data.TotalTanks;
-    //         }
+    if (TransferIn.receiveData())
+    {
+      Serial.println(Config_Data.TotalTanks);
+      MaxTankCount = Config_Data.TotalTanks;
+    }
   }
 
   delay(300);

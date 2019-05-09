@@ -105,8 +105,8 @@ void loop() {
   {
     float distance = GetTankStatus(tank);
 
-    Tank_Data.tankNo = tank;
-    Tank_Data.sensorValue = distance;
+    Tank_Data.tankNo = 1;
+    Tank_Data.sensorValue = 2;
   }
 
   delay(300);
