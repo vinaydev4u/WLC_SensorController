@@ -32,14 +32,18 @@ const int SensorsMaxCount = 2;
 int MaxTankCount = 2;
 const int StartTankCount = 2;
 
+#define SumpTankNo  1
+#define OverheadTankNo1  2
+#define OverheadTankNo2  3
+
 const String logFunc = "Nano-Sensor- Tank Module";
 //Error reading for valus in inches
 const int ErrorReading = 1000;
 bool EnableDebug = true;
 
+//Tanks data structure
 struct TANK_DATA_STRUCTURE {
   int tankNo;
-  int TotalTanks;
   float sensorValue;
 };
 
@@ -108,9 +112,11 @@ void loop() {
 
   for (int tank = 1; tank <= MaxTankCount ; tank++)
   {
-    float distance = GetTankStatus(tank);
+    int actualTankNo = tank + 1; //Add 1 because first always consider as sump or primary tank
+    
+    float distance = GetTankStatus(actualTankNo);
 
-    Tank_Data.tankNo = tank;
+    Tank_Data.tankNo = actualTankNo; 
     Tank_Data.sensorValue = distance;
 
     //Receive Config Data if any
@@ -136,7 +142,7 @@ float GetTankStatus(int tankNo)
 
   switch (tankNo)
   {
-    case 1:
+    case OverheadTankNo1: // consider tank no = 2 as first overhead tank
       trigPin1 = Tank1TrigPin1;
       echoPin1 = Tank1EchoPin1;
       trigPin2 = Tank1TrigPin2;
@@ -154,7 +160,7 @@ float GetTankStatus(int tankNo)
 
       // LogSerial(true,logFunc,true,tank1Pins);
       break;
-    case 2:
+    case OverheadTankNo2: // consider tank no = 3 as second overhead tank
       trigPin1 = Tank2TrigPin1;
       echoPin1 = Tank2EchoPin1;
       trigPin2 = Tank2TrigPin2;
