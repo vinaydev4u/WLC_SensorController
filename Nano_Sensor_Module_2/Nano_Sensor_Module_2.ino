@@ -110,21 +110,22 @@ void request() {
 
 void loop() {
 
+  //Receive Config Data if any
+  if (TransferIn.receiveData())
+  {
+    Serial.println(Config_Data.TotalTanks);
+    MaxTankCount = Config_Data.TotalTanks;
+  }
+
   for (int tank = 1; tank <= MaxTankCount ; tank++)
   {
     int actualTankNo = tank + 1; //Add 1 because first always consider as sump or primary tank
-    
+
     float distance = GetTankStatus(actualTankNo);
 
-    Tank_Data.tankNo = actualTankNo; 
+    Tank_Data.tankNo = actualTankNo;
     Tank_Data.sensorValue = distance;
 
-    //Receive Config Data if any
-    if (TransferIn.receiveData())
-    {
-      Serial.println(Config_Data.TotalTanks);
-      MaxTankCount = Config_Data.TotalTanks;
-    }
   }
 
   delay(300);
